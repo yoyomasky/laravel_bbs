@@ -9,21 +9,21 @@ use App\Http\Requests\TopicRequest;
 
 class TopicsController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth', ['except' => ['index', 'show']]);
-    }
+	public function __construct()
+	{
+		$this->middleware('auth', ['except' => ['index', 'show']]);
+	}
 
 	public function index()
 	{
-		$topics = Topic::paginate();
+		$topics = Topic::with('user', 'category')->paginate(30);
 		return view('topics.index', compact('topics'));
 	}
 
-    public function show(Topic $topic)
-    {
-        return view('topics.show', compact('topic'));
-    }
+	public function show(Topic $topic)
+	{
+		return view('topics.show', compact('topic'));
+	}
 
 	public function create(Topic $topic)
 	{
@@ -38,7 +38,7 @@ class TopicsController extends Controller
 
 	public function edit(Topic $topic)
 	{
-        $this->authorize('update', $topic);
+		$this->authorize('update', $topic);
 		return view('topics.create_and_edit', compact('topic'));
 	}
 
