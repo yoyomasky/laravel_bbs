@@ -111,3 +111,8 @@ body {
         }
     }
 }
+
+/* Add container and footer space */
+#app>div.container {
+    margin-bottom: 100px;
+}
