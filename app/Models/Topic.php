@@ -7,6 +7,10 @@ class Topic extends Model
     protected $fillable = [
         'title', 'body', 'category_id', 'excerpt', 'slug'
     ];
+    public function link($params = [])
+    {
+        return route('topics.show', array_merge([$this->id, $this->slug], $params));
+    }
     //1to1 在从表定义belongsTo
     public function category()
     {
