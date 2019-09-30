@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('styles')
-  <link rel="stylesheet" type="text/css" href="{{ asset('css/simditor.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ asset('css/wangEditor.css') }}">
 @stop
 @section('content')
 
@@ -24,7 +24,7 @@
             <form action="{{ route('topics.update', $topic->id) }}" method="POST" accept-charset="UTF-8">
               <input type="hidden" name="_method" value="PUT">
           @else
-            <form action="{{ route('topics.store') }}" method="POST" accept-charset="UTF-8">
+            <form action="{{ route('topics.store') }}" method="POST" onsubmit="" accept-charset="UTF-8">
           @endif
 
               <input type="hidden" name="_token" value="{{ csrf_token() }}">
@@ -44,12 +44,10 @@
                 </select>
               </div>
 
-              <div class="form-group">
-                <textarea name="body" class="form-control" id="editor" rows="6" placeholder="请填入至少三个字符的内容。" required>{{ old('body', $topic->body ) }}</textarea>
-              </div>
-
+              <div class="form-group" id="editor_box"></div>
+                <textarea name="body" id='editor_content' style="display:none;"></textarea>
               <div class="well well-sm">
-                <button type="submit" class="btn btn-primary"><i class="far fa-save mr-2" aria-hidden="true"></i> 保存</button>
+                <button type="submit" id="topicsSubBut" class="btn btn-primary"><i class="far fa-save mr-2" aria-hidden="true"></i> 保存</button>
               </div>
             </form>
         </div>
@@ -59,25 +57,48 @@
 
 
 @section('scripts')
-  <script type="text/javascript" src="{{ asset('js/module.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('js/hotkeys.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('js/uploader.js') }}"></script>
-  <script type="text/javascript" src="{{ asset('js/simditor.js') }}"></script>
+  <script type="text/javascript" src="{{ asset('js/wangEditor.js') }}"></script>
 
   <script>
     $(document).ready(function() {
-      var editor = new Simditor({
-        textarea: $('#editor'),
-        upload: {
-          url: '{{ route('topics.upload_image') }}',
-          params: {
-            _token: '{{ csrf_token() }}'
-          },
-          fileKey: 'upload_file',
-          connectionCount: 3,
-          leaveConfirm: '文件上传中，关闭此页面将取消上传。'
-        },
-        pasteImage: true,
+      // var editor = new Simditor({
+      //   textarea: $('#editor'),
+      //   upload: {
+      //     url: '{{ route('topics.upload_image') }}',
+      //     params: {
+      //       _token: '{{ csrf_token() }}'
+      //     },
+      //     fileKey: 'upload_file',
+      //     connectionCount: 3,
+      //     leaveConfirm: '文件上传中，关闭此页面将取消上传。'
+      //   },
+      //   pasteImage: true,
+      // });
+
+      var E = window.wangEditor;
+      var editor = new E('#editor_box');  // 两个参数也可以传入 elem 对象，class 选择器
+
+      //这里注意，下面的/news/upload是我的路由部分，主要是上传图片的后端代码
+      editor.customConfig.uploadImgServer = '{{ route('topics.upload_image') }}' ; // 上传图片到服务器
+      // 将图片大小限制为 3M
+      editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
+      // 限制一次最多上传 5 张图片
+      editor.customConfig.uploadImgMaxLength = 3;
+      editor.customConfig.uploadImgParams = {
+        // 如果版本 <=v3.1.0 ，属性值会自动进行 encode ，此处无需 encode
+        // 如果版本 >=v3.1.1 ，属性值不会自动 encode ，如有需要自己手动 encode
+        _token: '{{ csrf_token() }}'
+      }
+      //定义上传的filename，即上传图片的名称
+      editor.customConfig.uploadFileName = 'upload_file';
+      editor.customConfig.showLinkImg = false;
+      //开启wangEditor的错误提示，有利于我们更快的找到出错的地方
+      editor.customConfig.debug=true;
+      editor.create();
+      editor.txt.html('{{ old('body', $topic->body ) }}');
+
+      $('#topicsSubBut').on('click',function(){
+        $('#editor_content').html(editor.txt.html());
       });
     });
   </script>
