@@ -24,12 +24,16 @@ class TopicsController extends Controller
 			'data' => []
 		];
 		// 判断是否有上传文件，并赋值给 $file
-		if ($file = $request->upload_file) {
-			// 保存图片到本地
-			$result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
-			// 图片保存成功的话
-			if ($result) {
-				$data['data'][] = $result['path'];
+		//dd($request->upload_file);
+		if (count($request->upload_file)) {
+			foreach ($request->upload_file as $k => $v) {
+				// 保存图片到本地
+				$result = $uploader->save($v, 'topics', \Auth::id(), 1024);
+				// 图片保存成功的话
+				if ($result) {
+					$data['errno'] = 0;
+					$data['data'][$k] = $result['path'];
+				}
 			}
 		}
 		return $data;

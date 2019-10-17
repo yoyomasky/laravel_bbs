@@ -84,18 +84,23 @@
       editor.customConfig.uploadImgMaxSize = 2 * 1024 * 1024;
       // 限制一次最多上传 5 张图片
       editor.customConfig.uploadImgMaxLength = 3;
+      editor.customConfig.customAlert = function (info) {
+          // info 是需要提示的内容
+          alert(info);
+      }
       editor.customConfig.uploadImgParams = {
         // 如果版本 <=v3.1.0 ，属性值会自动进行 encode ，此处无需 encode
         // 如果版本 >=v3.1.1 ，属性值不会自动 encode ，如有需要自己手动 encode
         _token: '{{ csrf_token() }}'
       }
       //定义上传的filename，即上传图片的名称
-      editor.customConfig.uploadFileName = 'upload_file';
+      editor.customConfig.uploadFileName = 'upload_file[]';
       editor.customConfig.showLinkImg = false;
       //开启wangEditor的错误提示，有利于我们更快的找到出错的地方
-      editor.customConfig.debug=true;
+      editor.customConfig.debug=false;
       editor.create();
-      editor.txt.html('{{ old('body', $topic->body ) }}');
+      var content_box='{!! old('body',rep_br( $topic->body)) !!}';
+      editor.txt.html(content_box);
 
       $('#topicsSubBut').on('click',function(){
         $('#editor_content').html(editor.txt.html());

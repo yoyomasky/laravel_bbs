@@ -17013,7 +17013,7 @@ body {
   border: 1px solid #ddd;
   box-shadow: 0 0 30px #ccc;
   -moz-box-shadow: 0 0 30px #ccc;
-  -webkit-box-shadow: 0 0 30px #ccc;
+  -webkit-box-shadow: 11px 12px 5px 0px #e6e6e6;
   margin-bottom: 30px;
   margin-top: 10px;
 }
